@@ -2,45 +2,53 @@
 #define __PWM__
 
 #include <string>
+#include <cstdint>
 
 #define PWM_PATH	"/sys/class/pwm/"
 
-#define PWM0A	"pwm-1:0"
-#define PWM0B	"pwm-1:1"
-#define PWM1A	"pwm-4:0"
-#define PWM1B	"pwm-4:1"
-#define PWM2A	"pwm-7:0"
-#define PWM2B	"pwm-7:1"
 
 namespace BBB {
 
 enum PWM_POLARITY {ACTIVE_LOW=0, ACTIVE_HIGH=1};
 
+typedef struct {
+	std::string chip;
+	std::string channel;
+} PWM_CHANNEL;
+
+extern PWM_CHANNEL PWM0A;
+extern PWM_CHANNEL PWM0B;
+extern PWM_CHANNEL PWM1A;
+extern PWM_CHANNEL PWM1B;
+extern PWM_CHANNEL PWM2A;
+extern PWM_CHANNEL PWM2B;
+
+
 class PWM {
 public:
-	PWM(std::string);
+	PWM(PWM_CHANNEL&);
 	~PWM();
 
 	virtual std::string getChannel();
 
-	virtual int setPeriod_ns(unsigned int ns);
-	virtual int setPeriod_us(float us);
-	virtual int setPeriod_ms(float ns);
+	virtual int setPeriod_ns(uint32_t ns);
+	virtual int setPeriod_us(double us);
+	virtual int setPeriod_ms(double ms);
 
-	virtual unsigned int getPeriod_ns();
-	virtual float getPeriod_us();
-	virtual float getPeriod_ms();
+	virtual uint32_t getPeriod_ns();
+	virtual double getPeriod_us();
+	virtual double getPeriod_ms();
 
-	virtual int setFrequency_Hz(float freq);
-	virtual int setFrequency_kHz(float freq);
-	virtual int setFrequency_MHz(float freq);
+	virtual int setFrequency_Hz(double freq);
+	virtual int setFrequency_kHz(double freq);
+	virtual int setFrequency_MHz(double freq);
 
-	virtual float getFrequency_Hz();
-	virtual float getFrequency_kHz();
-	virtual float getFrequency_MHz();
+	virtual double getFrequency_Hz();
+	virtual double getFrequency_kHz();
+	virtual double getFrequency_MHz();
 
-	virtual int setDutyCycle(float);
-	virtual float getDutyCycle();
+	virtual int setDutyCycle(int);
+	virtual double getDutyCycle();
 
 	virtual int setPolarity(PWM_POLARITY = ACTIVE_HIGH);
 	virtual PWM_POLARITY getPolarity();
@@ -50,10 +58,11 @@ public:
 	virtual int stop();
 
 private:
-	std::string channel;
-	std::string path;
+	std::string channelPath, chipPath, channel;
 
-	int writeFile(std::string, std::string, unsigned int);
+	int activate();
+	int deactivate();
+	int writeFile(std::string, std::string, uint32_t);
 	int writeFile(std::string, std::string, std::string);
 	std::string readFile(std::string, std::string);
 };
