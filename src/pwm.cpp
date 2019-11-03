@@ -11,16 +11,9 @@ using namespace std;
 
 namespace BBB {
 
-PWM_CHANNEL PWM0A = {"pwmchip1", "pwm-1:0"};
-PWM_CHANNEL PWM0B = {"pwmchip1", "pwm-1:1"};
-PWM_CHANNEL PWM1A = {"pwmchip4", "pwm-4:0"};
-PWM_CHANNEL PWM1B = {"pwmchip4", "pwm-4:1"};
-PWM_CHANNEL PWM2A = {"pwmchip7", "pwm-7:0"};
-PWM_CHANNEL PWM2B = {"pwmchip7", "pwm-7:1"};
 
-
-PWM::PWM(PWM_CHANNEL& pwm) {
-	this->channel = pwm.channel;
+PWM::PWM(string chip) {
+	this->period = 0;
 	this->channelPath = PWM_PATH + pwm.channel + "/";
 	this->chipPath = PWM_PATH + pwm.chip + "/";
 

@@ -6,27 +6,18 @@
 
 #define PWM_PATH	"/sys/class/pwm/"
 
+#define PWM0	"pwmchip1"
+#define PWM1	"pwmchip4"
+#define PWM2	"pwmchip7"
 
 namespace BBB {
 
 enum PWM_POLARITY {ACTIVE_LOW=0, ACTIVE_HIGH=1};
 
-typedef struct {
-	std::string chip;
-	std::string channel;
-} PWM_CHANNEL;
-
-extern PWM_CHANNEL PWM0A;
-extern PWM_CHANNEL PWM0B;
-extern PWM_CHANNEL PWM1A;
-extern PWM_CHANNEL PWM1B;
-extern PWM_CHANNEL PWM2A;
-extern PWM_CHANNEL PWM2B;
-
 
 class PWM {
 public:
-	PWM(PWM_CHANNEL&);
+	PWM(std::string);
 	~PWM();
 
 	virtual std::string getChannel();
@@ -60,6 +51,8 @@ public:
 private:
 	std::string channelPath, chipPath, channel;
 
+	uint32_t period;
+	
 	int activate();
 	int deactivate();
 	int writeFile(std::string, std::string, uint32_t);
