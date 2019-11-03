@@ -13,48 +13,48 @@
 namespace BBB {
 
 enum PWM_POLARITY {ACTIVE_LOW=0, ACTIVE_HIGH=1};
-
+enum PWM_CHANNEL {PWM_A=0, PWM_B=1};
 
 class PWM {
 public:
-	PWM(std::string);
+	PWM(const char* chip);
 	~PWM();
 
-	virtual std::string getChannel();
+	virtual int setPeriod_ns(PWM_CHANNEL, uint32_t ns);
+	virtual int setPeriod_us(PWM_CHANNEL, double us);
+	virtual int setPeriod_ms(PWM_CHANNEL, double ms);
 
-	virtual int setPeriod_ns(uint32_t ns);
-	virtual int setPeriod_us(double us);
-	virtual int setPeriod_ms(double ms);
+	virtual uint32_t getPeriod_ns(PWM_CHANNEL);
+	virtual double getPeriod_us(PWM_CHANNEL);
+	virtual double getPeriod_ms(PWM_CHANNEL);
 
-	virtual uint32_t getPeriod_ns();
-	virtual double getPeriod_us();
-	virtual double getPeriod_ms();
+	virtual int setFrequency_Hz(PWM_CHANNEL, double freq);
+	virtual int setFrequency_kHz(PWM_CHANNEL, double freq);
+	virtual int setFrequency_MHz(PWM_CHANNEL, double freq);
 
-	virtual int setFrequency_Hz(double freq);
-	virtual int setFrequency_kHz(double freq);
-	virtual int setFrequency_MHz(double freq);
+	virtual double getFrequency_Hz(PWM_CHANNEL);
+	virtual double getFrequency_kHz(PWM_CHANNEL);
+	virtual double getFrequency_MHz(PWM_CHANNEL);
 
-	virtual double getFrequency_Hz();
-	virtual double getFrequency_kHz();
-	virtual double getFrequency_MHz();
+	virtual int setDutyCycle(PWM_CHANNEL, int);
+	virtual double getDutyCycle(PWM_CHANNEL);
 
-	virtual int setDutyCycle(int);
-	virtual double getDutyCycle();
-
-	virtual int setPolarity(PWM_POLARITY = ACTIVE_HIGH);
-	virtual PWM_POLARITY getPolarity();
+	virtual int setPolarity(PWM_CHANNEL, PWM_POLARITY = ACTIVE_HIGH);
+	virtual PWM_POLARITY getPolarity(PWM_CHANNEL);
 
 
-	virtual int start();
-	virtual int stop();
+	virtual int start(PWM_CHANNEL);
+	virtual int stop(PWM_CHANNEL);
+	virtual void reset();
 
 private:
-	std::string channelPath, chipPath, channel;
-
+	std::string pathA, pathB, chipPath;
+	char id;
 	uint32_t period;
-	
-	int activate();
-	int deactivate();
+	bool isReseted;
+
+	int activate(PWM_CHANNEL);
+	int deactivate(PWM_CHANNEL);
 	int writeFile(std::string, std::string, uint32_t);
 	int writeFile(std::string, std::string, std::string);
 	std::string readFile(std::string, std::string);

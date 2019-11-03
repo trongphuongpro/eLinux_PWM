@@ -7,30 +7,30 @@ using namespace BBB;
 
 
 int main() {
-	PWM led1(PWM2B);
-	PWM led2(PWM2A);
+	cout << "17h09" << endl;
 
-	led1.setPeriod_ms(0.25);
-	led1.setDutyCycle(0);
+	PWM leds(PWM2);
 
-	led2.setPeriod_ms(0.25);
-	led2.setDutyCycle(0);
+	leds.setPeriod_ms(PWM_A, 2.25);
+	usleep(500);
+	leds.setPeriod_ms(PWM_B, 2.25);
+	usleep(500);
 
-	cout << "led1: " << led1.getPeriod_ms() << "ms "
-					 << led1.getFrequency_kHz() << "kHz" << endl;
-	cout << "led2: " << led2.getPeriod_ms() << "ms "
-					 << led2.getFrequency_kHz() << "kHz" << endl;
+	cout << "led1: " << leds.getPeriod_ms(PWM_A) << "ms "
+					 << leds.getFrequency_kHz(PWM_A) << "kHz" << endl;
+	cout << "led2: " << leds.getPeriod_ms(PWM_B) << "ms "
+					 << leds.getFrequency_kHz(PWM_B) << "kHz" << endl;
 
-	led1.start();
-	led2.start();
+	leds.start(PWM_A);
+	leds.start(PWM_B);
 
 	int duty1 = 0, duty2 = 0;
 	int sign1 = 1, sign2 = 1;
 
 	while (1) {
 		
-		led1.setDutyCycle(duty1);
-		led2.setDutyCycle(duty2);
+		leds.setDutyCycle(PWM_A, duty1);
+		leds.setDutyCycle(PWM_B, duty2);
 
 		duty1 += sign1*10;
 		duty2 += sign2*20;
