@@ -11,15 +11,12 @@ int main() {
 
 	PWM leds(PWM2);
 
-	leds.setPeriod_ms(PWM_A, 2.25);
-	usleep(500);
-	leds.setPeriod_ms(PWM_B, 2.25);
-	usleep(500);
+	leds.setPeriod_us(1.5);
 
-	cout << "led1: " << leds.getPeriod_ms(PWM_A) << "ms "
-					 << leds.getFrequency_kHz(PWM_A) << "kHz" << endl;
-	cout << "led2: " << leds.getPeriod_ms(PWM_B) << "ms "
-					 << leds.getFrequency_kHz(PWM_B) << "kHz" << endl;
+	cout << "led1: " << leds.getPeriod_ms() << "ms "
+					 << leds.getFrequency_kHz() << "kHz" << endl;
+	cout << "led2: " << leds.getPeriod_ms() << "ms "
+					 << leds.getFrequency_kHz() << "kHz" << endl;
 
 	leds.start(PWM_A);
 	leds.start(PWM_B);

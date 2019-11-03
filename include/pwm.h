@@ -20,21 +20,21 @@ public:
 	PWM(const char* chip);
 	~PWM();
 
-	virtual int setPeriod_ns(PWM_CHANNEL, uint32_t ns);
-	virtual int setPeriod_us(PWM_CHANNEL, double us);
-	virtual int setPeriod_ms(PWM_CHANNEL, double ms);
+	virtual int setPeriod_ns(uint32_t ns);
+	virtual int setPeriod_us(double us);
+	virtual int setPeriod_ms(double ms);
 
-	virtual uint32_t getPeriod_ns(PWM_CHANNEL);
-	virtual double getPeriod_us(PWM_CHANNEL);
-	virtual double getPeriod_ms(PWM_CHANNEL);
+	virtual int setFrequency_Hz(double freq);
+	virtual int setFrequency_kHz(double freq);
+	virtual int setFrequency_MHz(double freq);
 
-	virtual int setFrequency_Hz(PWM_CHANNEL, double freq);
-	virtual int setFrequency_kHz(PWM_CHANNEL, double freq);
-	virtual int setFrequency_MHz(PWM_CHANNEL, double freq);
+	virtual uint32_t getPeriod_ns();
+	virtual double getPeriod_us();
+	virtual double getPeriod_ms();
 
-	virtual double getFrequency_Hz(PWM_CHANNEL);
-	virtual double getFrequency_kHz(PWM_CHANNEL);
-	virtual double getFrequency_MHz(PWM_CHANNEL);
+	virtual double getFrequency_Hz();
+	virtual double getFrequency_kHz();
+	virtual double getFrequency_MHz();
 
 	virtual int setDutyCycle(PWM_CHANNEL, int);
 	virtual double getDutyCycle(PWM_CHANNEL);
@@ -42,16 +42,24 @@ public:
 	virtual int setPolarity(PWM_CHANNEL, PWM_POLARITY = ACTIVE_HIGH);
 	virtual PWM_POLARITY getPolarity(PWM_CHANNEL);
 
-
 	virtual int start(PWM_CHANNEL);
 	virtual int stop(PWM_CHANNEL);
-	virtual void reset();
+	
 
 private:
 	std::string pathA, pathB, chipPath;
 	char id;
 	uint32_t period;
-	bool isReseted;
+
+	virtual int setPeriod_ns(PWM_CHANNEL, uint32_t ns);
+	virtual int setPeriod_us(PWM_CHANNEL, double us);
+	virtual int setPeriod_ms(PWM_CHANNEL, double ms);
+
+	virtual int setFrequency_Hz(PWM_CHANNEL, double freq);
+	virtual int setFrequency_kHz(PWM_CHANNEL, double freq);
+	virtual int setFrequency_MHz(PWM_CHANNEL, double freq);
+
+	virtual void reset();
 
 	int activate(PWM_CHANNEL);
 	int deactivate(PWM_CHANNEL);

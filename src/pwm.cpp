@@ -19,7 +19,6 @@ PWM::PWM(const char* chip) {
 	this->pathA = this->chipPath + string("pwm-") + this->id + string(":0/");
 	this->pathB = this->chipPath + string("pwm-") + this->id + string(":1/");
 
-	this->isReseted = false;
 	this->period = 1;
 
 	reset();
@@ -33,38 +32,19 @@ PWM::~PWM() {
 
 void PWM::reset() {
 	stop(PWM_A);
-	usleep(500);
 	stop(PWM_B);
-	usleep(500);
 
 	setDutyCycle(PWM_A, 0);
-	usleep(500);
 	setDutyCycle(PWM_B, 0);
-	usleep(500);
-
-	deactivate(PWM_A);
-	usleep(500);
-	deactivate(PWM_B);
-	usleep(500);
-	activate(PWM_A);
-	usleep(500);
-	activate(PWM_B);
-	usleep(500);
-
-	setPeriod_ns(PWM_A, 0);
-	usleep(500);
-	setPeriod_ns(PWM_B, 0);
-	usleep(500);
-
-	cout << "period A: " << getPeriod_ns(PWM_A) << endl;
-	cout << "period B: " << getPeriod_ns(PWM_B) << endl;
 
 	setPolarity(PWM_A, ACTIVE_HIGH);
-	usleep(500);
 	setPolarity(PWM_B, ACTIVE_HIGH);
-	usleep(500);
 
-	this->isReseted = true;
+	deactivate(PWM_A);
+	deactivate(PWM_B);
+
+	activate(PWM_A);
+	activate(PWM_B);
 
 	cout << "Resetting done!" << endl;
 }
@@ -119,32 +99,47 @@ std::string PWM::readFile(string path, string filename) {
 }
 
 
+int PWM::setPeriod_ns(uint32_t ns) {
+	reset();
+
+	setPeriod_ns(PWM_A, ns);
+	setPeriod_ns(PWM_B, ns);
+
+	return 0;
+}
+
+
+int PWM::setPeriod_us(double us) {
+	reset();
+
+	setPeriod_us(PWM_A, us);
+	setPeriod_us(PWM_B, us);
+
+	return 0;
+}
+
+
+int PWM::setPeriod_ms(double ms) {
+	reset();
+
+	setPeriod_ms(PWM_A, ms);
+	setPeriod_ms(PWM_B, ms);
+
+	return 0;
+}
+
+
 int PWM::setPeriod_ns(PWM_CHANNEL channel, uint32_t ns) {
 
-	if (this->isReseted) {
-		this->isReseted = false;
-		this->period = ns;
+	cout << "set period -> " << this->period << endl;
 
-		cout << "set period -> " << this->period << endl;
-
-		if (channel == PWM_A){
-			return writeFile(this->pathA, "period", ns);
-		}
-		if (channel == PWM_B) {
-			return writeFile(this->pathB, "period", ns);
-		}
+	if (channel == PWM_A) {  
+		return writeFile(this->pathA, "period", ns);
 	}
-
-	if (!this->isReseted) {
-		cout << "set period -> " << this->period << endl;
-		if (channel == PWM_A){
-			return writeFile(this->pathA, "period", this->period);
-		}
-		if (channel == PWM_B) {
-			return writeFile(this->pathB, "period", this->period);
-		}
+	if (channel == PWM_B) {
+		return writeFile(this->pathB, "period", ns);
 	}
-
+	
 	return -1;
 }
 
@@ -159,24 +154,49 @@ int PWM::setPeriod_ms(PWM_CHANNEL channel, double ms) {
 }
 
 
-uint32_t PWM::getPeriod_ns(PWM_CHANNEL channel) {
-	if (channel == PWM_A) {
-		return stoi(readFile(this->pathA, "period"));
-	}
-	if (channel == PWM_B) {
-		return stoi(readFile(this->pathB, "period"));
-	}
+uint32_t PWM::getPeriod_ns() {
+
+	return stoi(readFile(this->pathA, "period"));
+}
+
+
+double PWM::getPeriod_us() {
+	return getPeriod_ns() / 1000.0;
+}
+
+
+double PWM::getPeriod_ms() {
+	return getPeriod_ns() / 1000000.0;
+}
+
+
+int PWM::setFrequency_Hz(double freq) {
+	reset();
+
+	setFrequency_Hz(PWM_A, freq);
+	setFrequency_Hz(PWM_B, freq);
+
 	return 0;
 }
 
 
-double PWM::getPeriod_us(PWM_CHANNEL channel) {
-	return getPeriod_ns(channel) / 1000.0;
+int PWM::setFrequency_kHz(double freq) {
+	reset();
+
+	setFrequency_kHz(PWM_A, freq);
+	setFrequency_kHz(PWM_B, freq);
+
+	return 0;
 }
 
 
-double PWM::getPeriod_ms(PWM_CHANNEL channel) {
-	return getPeriod_ns(channel) / 1000000.0;
+int PWM::setFrequency_MHz(double freq) {
+	reset();
+
+	setFrequency_MHz(PWM_A, freq);
+	setFrequency_MHz(PWM_B, freq);
+
+	return 0;
 }
 
 
@@ -199,18 +219,18 @@ int PWM::setFrequency_MHz(PWM_CHANNEL channel, double freq) {
 }
 
 
-double PWM::getFrequency_Hz(PWM_CHANNEL channel) {
-	return 1000000000. / getPeriod_ns(channel);
+double PWM::getFrequency_Hz() {
+	return 1000000000. / getPeriod_ns();
 }
 
 
-double PWM::getFrequency_kHz(PWM_CHANNEL channel) {
-	return getFrequency_Hz(channel) / 1000;
+double PWM::getFrequency_kHz() {
+	return getFrequency_Hz() / 1000;
 }
 
 
-double PWM::getFrequency_MHz(PWM_CHANNEL channel) {
-	return getFrequency_Hz(channel) / 1000000;
+double PWM::getFrequency_MHz() {
+	return getFrequency_Hz() / 1000000;
 }
 
 
@@ -221,10 +241,10 @@ int PWM::setDutyCycle(PWM_CHANNEL channel, int duty) {
 	}
 
 	if (channel == PWM_A) {
-		return writeFile(this->pathA, "duty_cycle", duty * getPeriod_ns(channel) / 100);
+		return writeFile(this->pathA, "duty_cycle", duty * getPeriod_ns() / 100);
 	}
 	if (channel == PWM_B) {
-		return writeFile(this->pathB, "duty_cycle", duty * getPeriod_ns(channel) / 100);
+		return writeFile(this->pathB, "duty_cycle", duty * getPeriod_ns() / 100);
 	}
 	return -1;
 }
@@ -232,10 +252,10 @@ int PWM::setDutyCycle(PWM_CHANNEL channel, int duty) {
 
 double PWM::getDutyCycle(PWM_CHANNEL channel) {
 	if (channel == PWM_A) {
-		return stof(readFile(this->pathA, "duty_cycle")) / getPeriod_ns(channel);
+		return stof(readFile(this->pathA, "duty_cycle")) / getPeriod_ns();
 	}
 	if (channel == PWM_B) {
-		return stof(readFile(this->pathB, "duty_cycle")) / getPeriod_ns(channel);
+		return stof(readFile(this->pathB, "duty_cycle")) / getPeriod_ns();
 	}
 	return -1;
 }
