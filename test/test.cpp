@@ -7,11 +7,10 @@ using namespace BBB;
 
 
 int main() {
-	cout << "17h09" << endl;
 
 	PWM leds(PWM2);
 
-	leds.setPeriod_us(1.5);
+	leds.setPeriod_us(4.5);
 
 	cout << "led1: " << leds.getPeriod_ms() << "ms "
 					 << leds.getFrequency_kHz() << "kHz" << endl;

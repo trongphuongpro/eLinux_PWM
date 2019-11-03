@@ -19,8 +19,6 @@ PWM::PWM(const char* chip) {
 	this->pathA = this->chipPath + string("pwm-") + this->id + string(":0/");
 	this->pathB = this->chipPath + string("pwm-") + this->id + string(":1/");
 
-	this->period = 1;
-
 	reset();
 }
 
@@ -102,55 +100,20 @@ std::string PWM::readFile(string path, string filename) {
 int PWM::setPeriod_ns(uint32_t ns) {
 	reset();
 
-	setPeriod_ns(PWM_A, ns);
-	setPeriod_ns(PWM_B, ns);
+	writeFile(this->pathA, "period", ns);
+	writeFile(this->pathB, "period", ns);
 
 	return 0;
 }
 
 
 int PWM::setPeriod_us(double us) {
-	reset();
-
-	setPeriod_us(PWM_A, us);
-	setPeriod_us(PWM_B, us);
-
-	return 0;
+	return setPeriod_ns(us * 1000);
 }
 
 
 int PWM::setPeriod_ms(double ms) {
-	reset();
-
-	setPeriod_ms(PWM_A, ms);
-	setPeriod_ms(PWM_B, ms);
-
-	return 0;
-}
-
-
-int PWM::setPeriod_ns(PWM_CHANNEL channel, uint32_t ns) {
-
-	cout << "set period -> " << this->period << endl;
-
-	if (channel == PWM_A) {  
-		return writeFile(this->pathA, "period", ns);
-	}
-	if (channel == PWM_B) {
-		return writeFile(this->pathB, "period", ns);
-	}
-	
-	return -1;
-}
-
-
-int PWM::setPeriod_us(PWM_CHANNEL channel, double us) {
-	return setPeriod_ns(channel, us * 1000);
-}
-
-
-int PWM::setPeriod_ms(PWM_CHANNEL channel, double ms) {
-	return setPeriod_ns(channel, ms * 1000000);
+	return setPeriod_ns(ms * 1000000);
 }
 
 
@@ -171,51 +134,25 @@ double PWM::getPeriod_ms() {
 
 
 int PWM::setFrequency_Hz(double freq) {
-	reset();
 
-	setFrequency_Hz(PWM_A, freq);
-	setFrequency_Hz(PWM_B, freq);
-
-	return 0;
-}
-
-
-int PWM::setFrequency_kHz(double freq) {
-	reset();
-
-	setFrequency_kHz(PWM_A, freq);
-	setFrequency_kHz(PWM_B, freq);
-
-	return 0;
-}
-
-
-int PWM::setFrequency_MHz(double freq) {
-	reset();
-
-	setFrequency_MHz(PWM_A, freq);
-	setFrequency_MHz(PWM_B, freq);
-
-	return 0;
-}
-
-
-int PWM::setFrequency_Hz(PWM_CHANNEL channel, double freq) {
 	if (freq == 0) {
 		perror("PWM: frequency = 0 is invalid");
 		return -1;
 	}
-	return setPeriod_ns(channel, 1000000000 / freq);
+
+	reset();
+
+	return setPeriod_ns(1000000000 / freq);
 }
 
 
-int PWM::setFrequency_kHz(PWM_CHANNEL channel, double freq) {
-	return setFrequency_Hz(channel, freq * 1000);
+int PWM::setFrequency_kHz(double freq) {
+	return setFrequency_Hz(freq * 1000);
 }
 
 
-int PWM::setFrequency_MHz(PWM_CHANNEL channel, double freq) {
-	return setFrequency_Hz(channel, freq * 1000000);
+int PWM::setFrequency_MHz(double freq) {
+	return setFrequency_Hz(freq * 1000000);
 }
 
 

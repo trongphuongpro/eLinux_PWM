@@ -49,15 +49,6 @@ public:
 private:
 	std::string pathA, pathB, chipPath;
 	char id;
-	uint32_t period;
-
-	virtual int setPeriod_ns(PWM_CHANNEL, uint32_t ns);
-	virtual int setPeriod_us(PWM_CHANNEL, double us);
-	virtual int setPeriod_ms(PWM_CHANNEL, double ms);
-
-	virtual int setFrequency_Hz(PWM_CHANNEL, double freq);
-	virtual int setFrequency_kHz(PWM_CHANNEL, double freq);
-	virtual int setFrequency_MHz(PWM_CHANNEL, double freq);
 
 	virtual void reset();
 
