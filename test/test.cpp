@@ -10,12 +10,11 @@ int main() {
 
 	PWM leds(PWM2);
 
-	leds.setPeriod_us(4.5);
+	leds.setFrequency_kHz(92.5);
 
-	cout << "led1: " << leds.getPeriod_ms() << "ms "
+	cout << "pwm: " << leds.getPeriod_ms() << "ms "
 					 << leds.getFrequency_kHz() << "kHz" << endl;
-	cout << "led2: " << leds.getPeriod_ms() << "ms "
-					 << leds.getFrequency_kHz() << "kHz" << endl;
+
 
 	leds.start(PWM_A);
 	leds.start(PWM_B);

@@ -18,8 +18,6 @@ PWM::PWM(const char* chip) {
 	this->chipPath = PWM_PATH + string(chip) + "/";
 	this->pathA = this->chipPath + string("pwm-") + this->id + string(":0/");
 	this->pathB = this->chipPath + string("pwm-") + this->id + string(":1/");
-
-	reset();
 }
 
 
@@ -29,8 +27,11 @@ PWM::~PWM() {
 
 
 void PWM::reset() {
+
+	/* MUST stop PWM channels before unexport */
 	stop(PWM_A);
 	stop(PWM_B);
+	/* end */
 
 	setDutyCycle(PWM_A, 0);
 	setDutyCycle(PWM_B, 0);
@@ -43,8 +44,6 @@ void PWM::reset() {
 
 	activate(PWM_A);
 	activate(PWM_B);
-
-	cout << "Resetting done!" << endl;
 }
 
 
@@ -64,8 +63,7 @@ int PWM::writeFile(string path, string filename, string value) {
 	ofstream fs;
 	fs.open((path+filename).c_str());
 	if (!fs.is_open()) {
-		perror("PWM: write failed to open file ");
-		cout << "file: " << filename << endl;
+		perror(("PWM: write failed to open file " + string(filename)).c_str());
 		return -1;
 	}
 
@@ -84,8 +82,7 @@ std::string PWM::readFile(string path, string filename) {
 	ifstream fs;
 	fs.open((path+filename).c_str());
 	if (!fs.is_open()) {
-		cout << filename << endl;
-		perror("PWM: read failed to open file ");
+		perror(("PWM: read failed to open file " + string(filename)).c_str());
 		return 0;
 	}
 
