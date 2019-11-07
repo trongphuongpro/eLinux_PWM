@@ -1,5 +1,7 @@
 ## library for using PWM on BeagleBone Black Rev.C
 
+### Support: PWM0, PWM1, PWM2
+
 ### Requirements
 **create udev rules (in /etc/udev/rules.d) with following content:**
 
