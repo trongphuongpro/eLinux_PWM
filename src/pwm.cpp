@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdint>
+#include <cstdlib>
 #include "pwm.h"
 
 using namespace std;
@@ -16,8 +17,8 @@ PWM::PWM(const char* chip) {
 	this->id = chip[7];
 	
 	this->chipPath = PWM_PATH + string(chip) + "/";
-	this->pathA = this->chipPath + string("pwm-") + this->id + string(":0/");
-	this->pathB = this->chipPath + string("pwm-") + this->id + string(":1/");
+	this->pathA = this->chipPath + "pwm-" + this->id + ":0/";
+	this->pathB = this->chipPath + "pwm-" + this->id + ":1/";
 }
 
 
@@ -26,7 +27,7 @@ PWM::~PWM() {
 }
 
 
-void PWM::reset() {
+int PWM::reset() {
 
 	/* MUST stop PWM channels before unexport */
 	stop(PWM_A);
@@ -44,6 +45,17 @@ void PWM::reset() {
 
 	activate(PWM_A);
 	activate(PWM_B);
+
+	int ret = system("sudo systemctl restart udev.service");
+
+	if (ret == 0) {
+		cout << "Reset successful" << endl;
+	}
+	else {
+		cout << "Reset failed" << endl;
+	}
+
+	return ret;
 }
 
 
@@ -63,7 +75,7 @@ int PWM::writeFile(string path, string filename, string value) {
 	ofstream fs;
 	fs.open((path+filename).c_str());
 	if (!fs.is_open()) {
-		perror(("PWM: write failed to open file " + string(filename)).c_str());
+		perror(("PWM: write failed to open file '" + string(filename) + "'").c_str());
 		return -1;
 	}
 
@@ -82,7 +94,7 @@ std::string PWM::readFile(string path, string filename) {
 	ifstream fs;
 	fs.open((path+filename).c_str());
 	if (!fs.is_open()) {
-		perror(("PWM: read failed to open file " + string(filename)).c_str());
+		perror(("PWM: read failed to open file '" + string(filename) + "'").c_str());
 		return 0;
 	}
 
@@ -95,7 +107,9 @@ std::string PWM::readFile(string path, string filename) {
 
 
 int PWM::setPeriod_ns(uint32_t ns) {
-	reset();
+	if (!reset()) {
+		return -1;
+	}
 
 	writeFile(this->pathA, "period", ns);
 	writeFile(this->pathB, "period", ns);
@@ -136,8 +150,6 @@ int PWM::setFrequency_Hz(double freq) {
 		perror("PWM: frequency = 0 is invalid");
 		return -1;
 	}
-
-	reset();
 
 	return setPeriod_ns(1000000000 / freq);
 }

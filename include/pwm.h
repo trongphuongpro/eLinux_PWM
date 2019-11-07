@@ -50,7 +50,7 @@ private:
 	std::string pathA, pathB, chipPath;
 	char id;
 
-	virtual void reset();
+	virtual int reset();
 
 	int activate(PWM_CHANNEL);
 	int deactivate(PWM_CHANNEL);
