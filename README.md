@@ -13,5 +13,7 @@
 open file **/boot/uEnv.txt** and change:
 
 *uboot_overlay_addr4=/lib/firmware/BB-PWM0-00A0.dtbo*
+
 *uboot_overlay_addr5=/lib/firmware/BB-PWM1-00A0.dtbo*
+
 *uboot_overlay_addr6=/lib/firmware/BB-PWM2-00A0.dtbo*
