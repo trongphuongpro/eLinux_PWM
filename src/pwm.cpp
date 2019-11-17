@@ -30,21 +30,21 @@ PWM::~PWM() {
 int PWM::reset() {
 
 	/* MUST stop PWM channels before unexport */
-	stop(PWM_A);
-	stop(PWM_B);
+	stop(PWM::A);
+	stop(PWM::B);
 	/* end */
 
-	setDutyCycle(PWM_A, 0);
-	setDutyCycle(PWM_B, 0);
+	setDutyCycle(PWM::A, 0);
+	setDutyCycle(PWM::B, 0);
 
-	setPolarity(PWM_A, ACTIVE_HIGH);
-	setPolarity(PWM_B, ACTIVE_HIGH);
+	setPolarity(PWM::A, PWM::ACTIVE_HIGH);
+	setPolarity(PWM::B, PWM::ACTIVE_HIGH);
 
-	deactivate(PWM_A);
-	deactivate(PWM_B);
+	deactivate(PWM::A);
+	deactivate(PWM::B);
 
-	activate(PWM_A);
-	activate(PWM_B);
+	activate(PWM::A);
+	activate(PWM::B);
 
 	int ret = system("sudo systemctl restart udev.service");
 
@@ -59,13 +59,13 @@ int PWM::reset() {
 }
 
 
-int PWM::activate(PWM_CHANNEL channel) {
+int PWM::activate(PWM::CHANNEL channel) {
 
 	return writeFile(this->chipPath, "export", channel);
 }
 
 
-int PWM::deactivate(PWM_CHANNEL channel) {
+int PWM::deactivate(PWM::CHANNEL channel) {
 
 	return writeFile(this->chipPath, "unexport", channel);
 }
@@ -180,47 +180,47 @@ double PWM::getFrequency_MHz() {
 }
 
 
-int PWM::setDutyCycle(PWM_CHANNEL channel, int duty) {
+int PWM::setDutyCycle(PWM::CHANNEL channel, int duty) {
 	if (duty > 100 || duty < 0) {
 		perror("PWM: duty should be in range [0, 100]");
 		return -1;
 	}
 
-	if (channel == PWM_A) {
+	if (channel == PWM::A) {
 		return writeFile(this->pathA, "duty_cycle", duty * getPeriod_ns() / 100);
 	}
-	if (channel == PWM_B) {
+	if (channel == PWM::B) {
 		return writeFile(this->pathB, "duty_cycle", duty * getPeriod_ns() / 100);
 	}
 	return -1;
 }
 
 
-double PWM::getDutyCycle(PWM_CHANNEL channel) {
-	if (channel == PWM_A) {
+double PWM::getDutyCycle(PWM::CHANNEL channel) {
+	if (channel == PWM::A) {
 		return stof(readFile(this->pathA, "duty_cycle")) / getPeriod_ns();
 	}
-	if (channel == PWM_B) {
+	if (channel == PWM::B) {
 		return stof(readFile(this->pathB, "duty_cycle")) / getPeriod_ns();
 	}
 	return -1;
 }
 
 
-int PWM::setPolarity(PWM_CHANNEL channel, PWM_POLARITY mode) {
+int PWM::setPolarity(PWM::CHANNEL channel, PWM::POLARITY mode) {
 	string path;
-	if (channel == PWM_A) {
+	if (channel == PWM::A) {
 		path = this->pathA;
 	}
 
-	if (channel == PWM_B) {
+	if (channel == PWM::B) {
 		path = this->pathB;
 	}
 
-	if (mode == ACTIVE_LOW) {
+	if (mode == PWM::ACTIVE_LOW) {
 		return writeFile(path, "polarity", "inversed");
 	}
-	else if (mode == ACTIVE_HIGH) {
+	else if (mode == PWM::ACTIVE_HIGH) {
 		return writeFile(path, "polarity", "normal");
 	}
 	else {
@@ -230,36 +230,36 @@ int PWM::setPolarity(PWM_CHANNEL channel, PWM_POLARITY mode) {
 }
 
 
-PWM_POLARITY PWM::getPolarity(PWM_CHANNEL channel) {
+PWM::POLARITY PWM::getPolarity(PWM::CHANNEL channel) {
 	string polar;
 
-	if (channel == PWM_A) {
+	if (channel == PWM::A) {
 		polar = readFile(this->pathA, "polarity");
 	}
-	if (channel == PWM_B) {
+	if (channel == PWM::B) {
 		polar = readFile(this->pathB, "polarity");
 	}
 
 	if (polar == "normal")
-		return ACTIVE_HIGH;
+		return PWM::ACTIVE_HIGH;
 	else
-		return ACTIVE_LOW;
+		return PWM::ACTIVE_LOW;
 }
 
 
-int PWM::start(PWM_CHANNEL channel) {
-	if (channel == PWM_A)
+int PWM::start(PWM::CHANNEL channel) {
+	if (channel == PWM::A)
 		return writeFile(this->pathA, "enable", 1);
-	if (channel == PWM_B)
+	if (channel == PWM::B)
 		return writeFile(this->pathB, "enable", 1);
 	return -1;
 }
 
 
-int PWM::stop(PWM_CHANNEL channel) {
-	if (channel == PWM_A)
+int PWM::stop(PWM::CHANNEL channel) {
+	if (channel == PWM::A)
 		return writeFile(this->pathA, "enable", 0);
-	if (channel == PWM_B)
+	if (channel == PWM::B)
 		return writeFile(this->pathB, "enable", 0);
 	return -1;
 }
