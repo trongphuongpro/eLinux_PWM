@@ -36,14 +36,14 @@ public:
 	virtual double getFrequency_kHz();
 	virtual double getFrequency_MHz();
 
-	virtual int setDutyCycle(PWM::CHANNEL, int);
-	virtual double getDutyCycle(PWM::CHANNEL);
+	virtual int setDutyCycle(CHANNEL, int);
+	virtual double getDutyCycle(CHANNEL);
 
-	virtual int setPolarity(PWM::CHANNEL, PWM::POLARITY = PWM::ACTIVE_HIGH);
-	virtual PWM::POLARITY getPolarity(PWM::CHANNEL);
+	virtual int setPolarity(CHANNEL, POLARITY = ACTIVE_HIGH);
+	virtual POLARITY getPolarity(CHANNEL);
 
-	virtual int start(PWM::CHANNEL);
-	virtual int stop(PWM::CHANNEL);
+	virtual int start(CHANNEL);
+	virtual int stop(CHANNEL);
 	
 
 private:
@@ -52,8 +52,8 @@ private:
 
 	virtual int reset();
 
-	int activate(PWM::CHANNEL);
-	int deactivate(PWM::CHANNEL);
+	int activate(CHANNEL);
+	int deactivate(CHANNEL);
 	int writeFile(std::string, std::string, uint32_t);
 	int writeFile(std::string, std::string, std::string);
 	std::string readFile(std::string, std::string);
