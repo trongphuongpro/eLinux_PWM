@@ -8,13 +8,17 @@ using namespace BBB;
 
 int main() {
 
-	PWM leds(PWM2);
+	PWM leds(PWM0);
 
-	leds.setFrequency_kHz(92.5);
+	leds.setFrequency_kHz(100);
 
 	cout << "pwm: " << leds.getPeriod_ms() << "ms "
 					 << leds.getFrequency_kHz() << "kHz" << endl;
 
+	leds.setFrequency_kHz(20);
+
+	cout << "pwm: " << leds.getPeriod_ms() << "ms "
+					 << leds.getFrequency_kHz() << "kHz" << endl;
 
 	leds.start(PWM::A);
 	leds.start(PWM::B);

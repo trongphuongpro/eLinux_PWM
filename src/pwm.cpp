@@ -107,14 +107,16 @@ string PWM::readFile(string path, string filename) {
 
 
 int PWM::setPeriod_ns(uint32_t ns) {
-	if (!reset()) {
+	if (reset() != 0) {
 		return -1;
 	}
 
-	writeFile(this->pathA, "period", ns);
-	writeFile(this->pathB, "period", ns);
+	if ((writeFile(this->pathA, "period", ns) == 0) &&
+		(writeFile(this->pathB, "period", ns) == 0)) {
+		return 0;
+	}
 
-	return 0;
+	return -1;
 }
 
 
